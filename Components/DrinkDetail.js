@@ -1,12 +1,41 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  BackHandler,
+  Alert,
+} from "react-native";
+import {
+  useNavigation,
+  NavigationContainer,
+  useIsFocused,
+} from "@react-navigation/native";
 
 export default function DrinkDetail(propsTemp) {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   let { route } = propsTemp;
   let { propsSend } = route.params;
   let props = propsSend;
+
+  /*
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate(props.page);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [isFocused]);
+
+  */
 
   let ingredientOutput = "";
   let measureOutput = "";
@@ -19,8 +48,6 @@ export default function DrinkDetail(propsTemp) {
       measureOutput = measureOutput + props.ingredients[i].measure + "\n";
     }
   }
-
-  console.log(props);
 
   return (
     <View style={styles.container1}>

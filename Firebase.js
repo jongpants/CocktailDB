@@ -1,4 +1,5 @@
-/*import * as firebase from "firebase";
+/*
+import * as firebase from "firebase";
 import "@firebase/auth";
 import "@firebase/firestore";
 
@@ -7,7 +8,7 @@ const firebaseConfig = {
   authDomain: "cocktaildb-66062.firebaseapp.com",
   projectId: "cocktaildb-66062",
   storageBucket: "cocktaildb-66062.appspot.com",
-  messagingSenderId: "862994240962",
+  messagingSenderId: "183567675723",
   appId: "1:183567675723:android:6013d0f87b6008c19f38ce",
 };
 

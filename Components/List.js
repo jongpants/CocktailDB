@@ -14,12 +14,13 @@ import {
   CheckBox,
   Dimensions,
   TouchableOpacity,
+  BackHandler,
+  Alert,
 } from "react-native";
 import Swipeout from "react-native-swipeout";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import FullDrinkDetail from "./FullDrinkDetail";
 
 export default function List() {
   const [cocktail, setCocktail] = useState([]);
@@ -30,29 +31,31 @@ export default function List() {
   const [isEnabled, setIsEnabled] = useState(false);
   const [iFlag, setiFlag] = useState(false);
   const [swipeFlag, setSwipeFlag] = useState(false);
-  const [drinkIndex, setDrinkIndex] = useState();
+  let [favouriteDrinks, setFavouriteDrinks] = useState([]);
   const navigation = useNavigation();
   let url = "https://www.thecocktaildb.com/api/json/v1/1/";
   const isFocused = useIsFocused();
 
   /*
   useEffect(() => {
-    let mounted = true;
-    const search = async () => {
-      try {
-        let response = await fetch(
-          "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=gin"
-        );
-        let search = await response.json();
-        if (mounted) setData(search);
-      } catch (error) {
-        console.log("FETCH ERROR", error);
-      }
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to exit the application", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
     };
-    search();
-    return () => {
-      mounted = false;
-    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
   }, [isFocused]);
 */
 
@@ -97,7 +100,7 @@ export default function List() {
     };
   };
 
-  const tempFunction = (index) => {
+  const detailButton = (index) => {
     let shortenedProp = data.drinks[index];
     let ingredients = [];
 
@@ -113,6 +116,7 @@ export default function List() {
       }
     }
     let drinkProps = {
+      //page: "List",
       picture: shortenedProp.strDrinkThumb,
       name: shortenedProp.strDrink,
       alcoholic: shortenedProp.strAlcoholic,
@@ -121,36 +125,111 @@ export default function List() {
       instruction: shortenedProp.strInstructions,
       ingredients: ingredients,
     };
+
     navigation.navigate("DrinkDetail", { propsSend: drinkProps });
   };
 
-  const detailButton = (index) => {
-    setDrinkIndex(index);
-    console.log(drinkIndex);
-    //console.log(data.drinks[0]);
-    //setModalVisible(true);
+  const favouriteButton = (index) => {
+    let shortenedProp = data.drinks[index];
+    let ingredients = [];
+
+    for (let i = 1; i <= 15; i++) {
+      let ingr = "strIngredient" + i;
+      let meas = "strMeasure" + i;
+
+      if (shortenedProp[ingr]) {
+        ingredients.push({
+          ingredient: shortenedProp[ingr],
+          measure: shortenedProp[meas],
+        });
+      }
+    }
+    let drinkProps = {
+      id: shortenedProp.idDrink,
+      picture: shortenedProp.strDrinkThumb,
+      name: shortenedProp.strDrink,
+      alcoholic: shortenedProp.strAlcoholic,
+      category: shortenedProp.strCategory,
+      glass: shortenedProp.strGlass,
+      instruction: shortenedProp.strInstructions,
+      ingredients: ingredients,
+    };
+    if (favouriteDrinks.length > 0) {
+      let drinkFound = false;
+      for (let i = 0; i < favouriteDrinks.length; i++) {
+        if (favouriteDrinks[i].id.includes(drinkProps.id)) {
+          favouriteDrinks.splice(i, 1);
+          console.log("removed a drink");
+          drinkFound = true;
+        }
+      }
+      if (drinkFound == false) {
+        setFavouriteDrinks([...favouriteDrinks, drinkProps]);
+        console.log("added new drink");
+      }
+    } else {
+      setFavouriteDrinks([...favouriteDrinks, drinkProps]);
+      console.log("added first drink");
+    }
+    //navigation.navigate("Favourites", { propsSend: drinkProps });
   };
 
   const renderItem = ({ item, index }) => {
-    let swipeButtons = [
-      {
-        text: <Ionicons name="md-star" size={40} color={"yellow"} />,
-        backgroundColor: "#fbfbfb",
-        underlayColor: "white",
-        onPress: () => {
-          searchButton;
+    let check = false;
+    if (favouriteDrinks.length > 0) {
+      for (let i = 0; i < favouriteDrinks.length; i++) {
+        if (favouriteDrinks[i].id.includes(item.idDrink)) {
+          check = true;
+        }
+      }
+    }
+
+    let swipeButtons = [];
+    if (check) {
+      swipeButtons = [
+        {
+          text: <Ionicons name="md-star" size={40} color={"yellow"} />,
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            favouriteButton(index);
+          },
         },
-      },
-      {
-        text: <Ionicons name={"newspaper-outline"} size={40} color={"black"} />,
-        backgroundColor: "#fbfbfb",
-        underlayColor: "white",
-        onPress: () => {
-          tempFunction(index);
+        {
+          text: (
+            <Ionicons name={"newspaper-outline"} size={40} color={"black"} />
+          ),
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            detailButton(index);
+          },
         },
-      },
-    ];
-    if (swipeButtons) {
+      ];
+    } else if (check == false) {
+      swipeButtons = [
+        {
+          text: <Ionicons name="md-star-outline" size={40} color={"yellow"} />,
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            favouriteButton(index);
+          },
+        },
+        {
+          text: (
+            <Ionicons name={"newspaper-outline"} size={40} color={"black"} />
+          ),
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            detailButton(index);
+          },
+        },
+      ];
+    }
+
+    if (swipeFlag) {
       return (
         <Swipeout
           right={swipeButtons}
@@ -191,6 +270,38 @@ export default function List() {
           </View>
         </Swipeout>
       );
+    } else {
+      return (
+        <View style={styles.container}>
+          <Image
+            style={styles.pic}
+            source={{
+              uri: item.strDrinkThumb,
+            }}
+          />
+          <View style={styles.content1}>
+            <Text style={styles.title}>{item.strDrink}</Text>
+            <Text style={{ alignItems: "flex-end" }}>{item.strCategory}</Text>
+            <Text style={{ alignItems: "flex-end" }}>{item.strAlcoholic}</Text>
+          </View>
+          <View style={styles.content2}>
+            <Text style={{ alignItems: "flex-end" }}>
+              {item.strIngredient1}
+            </Text>
+            <Text style={{ alignItems: "flex-end" }}>
+              {item.strIngredient2}
+            </Text>
+            <Text style={{ alignItems: "flex-end" }}>
+              {item.strIngredient3}
+            </Text>
+            {item.strIngredient4 != null ? (
+              <Text style={{ alignItems: "flex-end" }}>...</Text>
+            ) : (
+              <></>
+            )}
+          </View>
+        </View>
+      );
     }
   };
 
@@ -222,30 +333,35 @@ export default function List() {
           />
         </Pressable>
       </View>
-      <FullDrinkDetail />
-      {data.length == 0 && isEnabled == false ? (
-        <View style={styles.firstText}>
-          <Text> Search for drinks to start</Text>
-        </View>
-      ) : data.drinks == null && isEnabled == false ? (
-        <View style={styles.firstText}>
-          <Text>Try another search</Text>
-        </View>
-      ) : iFlag && isEnabled == true ? (
-        <View style={styles.firstText}>
-          <Text>Make sure the ingredients name is fully typed and correct</Text>
-        </View>
-      ) : data.drinks == null && isEnabled == true ? (
-        <View style={styles.firstText}>
-          <Text>Make sure the ingredients name is fully typed and correct</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={data.drinks}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.idDrink}
-        />
-      )}
+      <View style={styles.contentBG}>
+        {data.length == 0 && isEnabled == false ? (
+          <View style={styles.firstText}>
+            <Text> Search for drinks to start</Text>
+          </View>
+        ) : data.drinks == null && isEnabled == false ? (
+          <View style={styles.firstText}>
+            <Text>Try another search</Text>
+          </View>
+        ) : iFlag && isEnabled == true ? (
+          <View style={styles.firstText}>
+            <Text>
+              Make sure the ingredients name is fully typed and correct
+            </Text>
+          </View>
+        ) : data.drinks == null && isEnabled == true ? (
+          <View style={styles.firstText}>
+            <Text>
+              Make sure the ingredients name is fully typed and correct
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={data.drinks}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.idDrink}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -266,6 +382,11 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     backgroundColor: "white",
+    //backgroundColor: "#fbfbfb",
+  },
+  contentBG: {
+    flex: 1,
+    backgroundColor: "#fbfbfb",
   },
   firstText: {
     marginTop: "75%",

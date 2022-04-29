@@ -1,96 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
-  Pressable,
   FlatList,
-  Picker,
   Text,
   TextInput,
   View,
   Image,
-  Switch,
-  ToastAndroid,
-  Modal,
-  CheckBox,
   Dimensions,
-  TouchableOpacity,
 } from "react-native";
 import Swipeout from "react-native-swipeout";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function FavouriteList() {
   const [data, setData] = useState([]);
   const [text, setText] = useState("");
   const [close, setClose] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [iFlag, setiFlag] = useState(false);
   const [swipeFlag, setSwipeFlag] = useState(false);
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
-
-  /*
-  useEffect(() => {
-    let mounted = true;
-    const search = async () => {
-      try {
-        let response = await fetch(
-          "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=gin"
-        );
-        let search = await response.json();
-        if (mounted) setData(search);
-      } catch (error) {
-        console.log("FETCH ERROR", error);
-      }
-    };
-    search();
-    return () => {
-      mounted = false;
-    };
-  }, [isFocused]);
-*/
-
-  const toggleSwitch = () => {
-    setIsEnabled((previousState) => !previousState);
-    if (isEnabled) {
-      ToastAndroid.show("Search by drink name", ToastAndroid.SHORT);
-    } else {
-      ToastAndroid.show("Search by full ingredient name", ToastAndroid.SHORT);
-    }
-  };
-
-  const searchButton = () => {
-    let completeUrl = url;
-    if (isEnabled) {
-      completeUrl = completeUrl + "filter.php?i=" + text;
-    } else {
-      completeUrl = completeUrl + "search.php?s=" + text;
-    }
-    let mounted = true;
-    const search = async () => {
-      try {
-        console.log("awaiting fetch");
-        let response = await fetch(completeUrl);
-        console.log("fetch complete");
-        let search = await response.json();
-        if (mounted) setData(search);
-        if (isEnabled) {
-          setSwipeFlag(false);
-        } else {
-          setSwipeFlag(true);
-        }
-        setiFlag(false);
-      } catch (error) {
-        console.log("FETCH ERROR", error);
-        setiFlag(true);
-      }
-    };
-    search();
-    return () => {
-      mounted = false;
-    };
-  };
 
   const detailButton = (index) => {
     let shortenedProp = data.drinks[index];
@@ -120,24 +47,60 @@ export default function FavouriteList() {
   };
 
   const renderItem = ({ item, index }) => {
-    let swipeButtons = [
-      {
-        text: <Ionicons name="md-star" size={40} color={"yellow"} />,
-        backgroundColor: "#fbfbfb",
-        underlayColor: "white",
-        onPress: () => {
-          searchButton;
+    let check = false;
+    if (favouriteDrinks.length > 0) {
+      for (let i = 0; i < favouriteDrinks.length; i++) {
+        if (favouriteDrinks[i].id.includes(item.idDrink)) {
+          check = true;
+        }
+      }
+    }
+
+    let swipeButtons = [];
+    if (check) {
+      swipeButtons = [
+        {
+          text: <Ionicons name="md-star" size={40} color={"yellow"} />,
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            favouriteButton(index);
+          },
         },
-      },
-      {
-        text: <Ionicons name={"newspaper-outline"} size={40} color={"black"} />,
-        backgroundColor: "#fbfbfb",
-        underlayColor: "white",
-        onPress: () => {
-          detailButton(index);
+        {
+          text: (
+            <Ionicons name={"newspaper-outline"} size={40} color={"black"} />
+          ),
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            detailButton(index);
+          },
         },
-      },
-    ];
+      ];
+    } else if (check == false) {
+      swipeButtons = [
+        {
+          text: <Ionicons name="md-star-outline" size={40} color={"yellow"} />,
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            favouriteButton(index);
+          },
+        },
+        {
+          text: (
+            <Ionicons name={"newspaper-outline"} size={40} color={"black"} />
+          ),
+          backgroundColor: "#fbfbfb",
+          underlayColor: "white",
+          onPress: () => {
+            detailButton(index);
+          },
+        },
+      ];
+    }
+
     if (swipeFlag) {
       return (
         <Swipeout
@@ -220,10 +183,9 @@ export default function FavouriteList() {
         <TextInput
           style={styles.searchBar}
           label="text"
-          placeholder="Filter Drink"
+          placeholder="Filter Search Drinks"
           value={text}
           onChangeText={(text) => setText(text)}
-          onSubmitEditing={searchButton}
         />
       </View>
       <View style={styles.contentBG}>
@@ -236,6 +198,9 @@ export default function FavouriteList() {
     </View>
   );
 }
+
+// -- Commented out backgroundColors
+//    are for flexbox size checking --
 const styles = StyleSheet.create({
   searchBarBorder: {
     flexDirection: "row",

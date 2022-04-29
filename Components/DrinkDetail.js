@@ -1,41 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  BackHandler,
-  Alert,
-} from "react-native";
-import {
-  useNavigation,
-  NavigationContainer,
-  useIsFocused,
-} from "@react-navigation/native";
+import React from "react";
+import { StyleSheet, Text, View, Image } from "react-native";
 
+// -- Receive props from detailButton and return a full page of a
+//    single drink with full details. --
 export default function DrinkDetail(propsTemp) {
-  const navigation = useNavigation();
-  const isFocused = useIsFocused();
   let { route } = propsTemp;
   let { propsSend } = route.params;
   let props = propsSend;
-
-  /*
-  useEffect(() => {
-    const backAction = () => {
-      navigation.navigate(props.page);
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, [isFocused]);
-
-  */
 
   let ingredientOutput = "";
   let measureOutput = "";
@@ -95,6 +66,9 @@ export default function DrinkDetail(propsTemp) {
     </View>
   );
 }
+
+// -- Commented out backgroundColors
+//    are for flexbox size checking --
 const styles = StyleSheet.create({
   container1: {
     flex: 5,

@@ -1,30 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Pressable,
   FlatList,
-  Picker,
   Text,
   TextInput,
   View,
   Image,
   Switch,
   ToastAndroid,
-  Modal,
-  CheckBox,
   Dimensions,
-  TouchableOpacity,
-  BackHandler,
-  Alert,
 } from "react-native";
 import Swipeout from "react-native-swipeout";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function List() {
-  const [cocktail, setCocktail] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
   const [text, setText] = useState("");
   const [close, setClose] = useState(false);
@@ -34,9 +25,9 @@ export default function List() {
   let [favouriteDrinks, setFavouriteDrinks] = useState([]);
   const navigation = useNavigation();
   let url = "https://www.thecocktaildb.com/api/json/v1/1/";
-  const isFocused = useIsFocused();
 
   /*
+  -- Back button handler that works to a degree --
   useEffect(() => {
     const backAction = () => {
       Alert.alert("Hold on!", "Are you sure you want to exit the application", [
@@ -56,9 +47,10 @@ export default function List() {
     );
 
     return () => backHandler.remove();
-  }, [isFocused]);
+  }, []);
 */
 
+  // -- Toggle API fetch by name of drink or by ingredient --
   const toggleSwitch = () => {
     setIsEnabled((previousState) => !previousState);
     if (isEnabled) {
@@ -68,6 +60,7 @@ export default function List() {
     }
   };
 
+  //-- Button to fetch api --
   const searchButton = () => {
     let completeUrl = url;
     if (isEnabled) {
@@ -100,6 +93,7 @@ export default function List() {
     };
   };
 
+  // -- Button that navigates to another website with full details of a drink --
   const detailButton = (index) => {
     let shortenedProp = data.drinks[index];
     let ingredients = [];
@@ -129,6 +123,8 @@ export default function List() {
     navigation.navigate("DrinkDetail", { propsSend: drinkProps });
   };
 
+  // -- Save a drink with its full info in favouriteDrinks
+  //    but serves no purpose with Favourites tab not working --
   const favouriteButton = (index) => {
     let shortenedProp = data.drinks[index];
     let ingredients = [];
@@ -171,9 +167,9 @@ export default function List() {
       setFavouriteDrinks([...favouriteDrinks, drinkProps]);
       console.log("added first drink");
     }
-    //navigation.navigate("Favourites", { propsSend: drinkProps });
   };
 
+  // -- Generate each row of drink with info and buttons --
   const renderItem = ({ item, index }) => {
     let check = false;
     if (favouriteDrinks.length > 0) {
@@ -187,6 +183,7 @@ export default function List() {
     let swipeButtons = [];
     if (check) {
       swipeButtons = [
+        /*
         {
           text: <Ionicons name="md-star" size={40} color={"yellow"} />,
           backgroundColor: "#fbfbfb",
@@ -195,6 +192,7 @@ export default function List() {
             favouriteButton(index);
           },
         },
+        */
         {
           text: (
             <Ionicons name={"newspaper-outline"} size={40} color={"black"} />
@@ -208,6 +206,7 @@ export default function List() {
       ];
     } else if (check == false) {
       swipeButtons = [
+        /*
         {
           text: <Ionicons name="md-star-outline" size={40} color={"yellow"} />,
           backgroundColor: "#fbfbfb",
@@ -216,6 +215,7 @@ export default function List() {
             favouriteButton(index);
           },
         },
+        */
         {
           text: (
             <Ionicons name={"newspaper-outline"} size={40} color={"black"} />
@@ -305,6 +305,7 @@ export default function List() {
     }
   };
 
+  // -- The actual return --
   return (
     <View style={styles.header}>
       <View style={styles.searchBarBorder}>
@@ -365,6 +366,8 @@ export default function List() {
     </View>
   );
 }
+// -- Commented out backgroundColors
+//    are for flexbox size checking --
 const styles = StyleSheet.create({
   searchBarBorder: {
     flexDirection: "row",

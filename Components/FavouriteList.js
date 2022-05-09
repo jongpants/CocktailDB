@@ -199,6 +199,7 @@ export default function FavouriteList() {
   );
 }
 
+// -- STYLES -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -- Commented out backgroundColors
 //    are for flexbox size checking --
 const styles = StyleSheet.create({

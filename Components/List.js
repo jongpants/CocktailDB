@@ -110,7 +110,6 @@ export default function List() {
       }
     }
     let drinkProps = {
-      //page: "List",
       picture: shortenedProp.strDrinkThumb,
       name: shortenedProp.strDrink,
       alcoholic: shortenedProp.strAlcoholic,
@@ -123,8 +122,8 @@ export default function List() {
     navigation.navigate("DrinkDetail", { propsSend: drinkProps });
   };
 
-  // -- Save a drink with its full info in favouriteDrinks
-  //    but serves no purpose with Favourites tab not working --
+  /* -- Save a drink with its full info in favouriteDrinks
+        but serves no purpose with Favourites tab not working --
   const favouriteButton = (index) => {
     let shortenedProp = data.drinks[index];
     let ingredients = [];
@@ -168,8 +167,9 @@ export default function List() {
       console.log("added first drink");
     }
   };
+  */
 
-  // -- Generate each row of drink with info and buttons --
+  // -- Generate each row of drink with info, swipe functionality and buttons --
   const renderItem = ({ item, index }) => {
     let check = false;
     if (favouriteDrinks.length > 0) {
@@ -305,7 +305,7 @@ export default function List() {
     }
   };
 
-  // -- The actual return --
+  // -- The applications view --
   return (
     <View style={styles.header}>
       <View style={styles.searchBarBorder}>
@@ -366,6 +366,7 @@ export default function List() {
     </View>
   );
 }
+// -- STYLES -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -- Commented out backgroundColors
 //    are for flexbox size checking --
 const styles = StyleSheet.create({

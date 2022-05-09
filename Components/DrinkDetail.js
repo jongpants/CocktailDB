@@ -67,6 +67,7 @@ export default function DrinkDetail(propsTemp) {
   );
 }
 
+// -- STYLES -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -- Commented out backgroundColors
 //    are for flexbox size checking --
 const styles = StyleSheet.create({

@@ -11,7 +11,7 @@ My application is made to have a very clean and minimalistic look with the featu
 The course recommended us to use Firebase DB and my extra features included a favourite list, register and login system for personalized favourite lists. At the time of making the app, it came apparent to me and the teacher that Firebase did not work correctly with our version of Expo. Which wasted days of troubleshoot efforts from me and in the end with too little time left, I had to release the application without the functionalities.
 
 </br>
-My code according to the teachers review was very clean and understandable while also having good commenting. The scrapped features were also just simply commented out but could be easily be removed with no problem at all.
+My code according to the teachers review was very clean and understandable while also having good commenting. The scrapped features codes were also just simply commented out or regarding the files themselves made unsuable, but every scrapped comment/file could be easily be removed with no problem at all, which of course was tested thoroughly.
 
 </br>
 <h1>Opening application and search by name</h1>
